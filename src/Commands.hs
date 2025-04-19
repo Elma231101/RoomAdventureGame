@@ -33,19 +33,21 @@ parseAction actionString =
         "TAKE"      -> Just Take
         "USE"       -> Just Use
         "INVENTORY" -> Just Inventory
+        "QUIT"      -> Just Quit
         "HELP"      -> Just Help
         _           -> Nothing
 
 helpMesg :: String
-helpMesg = "AVAILABLE COMMANDS:" ++
-           "   COMMAND               EFFECT  \n" ++
-           "MOVE <DIRECTION> -> Move in a given direction.\n" ++
-           "LOOK             -> Look at your surroundings.\n" ++
-           "PUT <ITEM>       -> Drop an item in your inventory.\n" ++
-           "TAKE <ITEM>      -> Take an item into your inventory.\n" ++
-           "USE <ITEM>       -> Use an item.\n" ++
-           "INVENTORY        -> Show your inventory.\n" ++
-           "HELP             -> Show this help menu.\n"
+helpMesg = "COMMAND          | EFFECT\n" ++
+           "-----------------------------------------------------\n" ++
+           "MOVE <DIRECTION> | Move in a given direction.\n" ++
+           "LOOK             | Look at your surroundings.\n" ++
+           "PUT <ITEM>       | Drop an item in your inventory.\n" ++
+           "TAKE <ITEM>      | Take an item into your inventory.\n" ++
+           "USE <ITEM>       | Use an item.\n" ++
+           "INVENTORY        | Show your inventory.\n" ++
+           "QUIT             | Quit the game.\n" ++
+           "HELP             | Show this help menu.\n"
 
 parseLine :: String -> Command
 parseLine raw =
@@ -91,8 +93,9 @@ parseCommand state command =
                     True -> case getUse item' of
                               Nothing -> (state, "I don't know how to use that")
                               Just f -> f state
+    Just Quit -> (state, "Quit")
     Just Help -> (state, helpMesg)
-    _ -> (state, "I'm not sure what you mean.")
+--    _ -> (state, "I'm not sure what you mean.")
 
 parseInput :: State -> String -> (State, String)
 parseInput state "" = (state, "")

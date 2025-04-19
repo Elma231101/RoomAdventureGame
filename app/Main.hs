@@ -11,8 +11,13 @@ play state = do
     hFlush stdout
     input <- getLine
     let (state', mesg) = parseInput state input
-    putStrLn mesg
-    play state'
+    if mesg == "Quit"
+        then do
+            putStrLn "Exiting the program. Thank you for playing!"
+            return ()
+        else do
+            putStrLn mesg
+            play state'
 
 main :: IO ()
 main = play state

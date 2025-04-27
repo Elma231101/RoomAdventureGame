@@ -85,18 +85,48 @@ demetrin = MkItem { getUse = Just demetrinUse
                , getDisplay = "a demetrin"
                }
 
+pingPongName = "pingpong"
+pingPong = MkItem { getUse = Just pingPongUse
+               , getPut = True
+               , getTake = True
+               , getDisplay = "a pingPong table"
+               }
+
+pingPongUse :: State -> (State, String)
+pingPongUse state =
+    let
+        score = getScore $ getPlayer state
+        player = getPlayer state
+        inventory = getInventory player
+        --inventory' = [ i | i <- inventory, i /= pingPongName ]
+        player' = MkPlayer { getInventory = inventory
+                           , getLocation = getLocation player
+                           , getHealth = (getHealth player) - 30
+                           , getScore = (getScore player) + 100
+                           }
+        state' = MkState { getPlayer = player'
+                         , getItemLocations = getItemLocations state
+                         }
+        mesg = "...I just played ping pong...\n"
+            ++ "\n And I won!!! yeeaahhh"
+    in
+        (state', mesg)
+
+
 items = [ (bucketName, bucket)
         , (whiskeyName, whiskey)
         , (frogName, frog)
         , (chainName, chain)
         , (emptyWhiskeyName, emptyWhiskey)
         , (demetrinName, demetrin)
+        , (pingPongName, pingPong)
         ]
 
 denName = RoomName "Living Room"
 atticName = RoomName "Attic"
 gardenName = RoomName "Garden"
 bedRoomName = RoomName "Bed Room"
+basementName = RoomName "Basement"
 
 livingRoom :: Room
 livingRoom = MkRoom { getDescription = (Description "You are in the living-room. A wizard is snoring loudly on the couch.")
@@ -107,9 +137,10 @@ livingRoom = MkRoom { getDescription = (Description "You are in the living-room.
                     }
 
 bedRoom :: Room
-bedRoom = MkRoom { getDescription = (Description "You are in the bed room. Take a demetrin and get ready to sleep! zZzZz")
+bedRoom = MkRoom { getDescription = (Description "You are in the bedroom. Take a demetrin and get ready to sleep! zZzZz")
                     , getRoomName = bedRoomName
                     , getExits = [ (West, denName)
+                                 , (Down, basementName)
                                  ]
                     }
 
@@ -125,10 +156,18 @@ gardenRoom = MkRoom { getDescription = (Description "You are in a beautiful gard
                     , getExits = [(East, denName)]
                     }
 
+basement :: Room
+basement = MkRoom { getDescription = (Description "You are in the basement. There are tools for everything here.")
+                    , getRoomName = basementName
+                    , getExits = [ (Up, bedRoomName)
+                                 ]
+                  }
+
 rooms = [ (gardenName, gardenRoom)
         , (denName, livingRoom)
         , (atticName, atticRoom)
         , (bedRoomName, bedRoom)
+        , (basementName, basement)
         ]
 
 player :: Player
@@ -143,6 +182,7 @@ state = MkState { getItemLocations = [ (gardenName, [frogName, chainName])
                                      , (denName, [whiskeyName, bucketName])
                                      , (atticName, [])
                                      , (bedRoomName, [demetrinName])
+                                     , (basementName, [pingPongName, chainName])
                                      ]
                 , getPlayer = player
                 }

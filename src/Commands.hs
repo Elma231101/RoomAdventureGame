@@ -234,8 +234,8 @@ parseDescription' ((dir, _) : dirs) =
             SouthWest -> "to the SouthWest"
             West      -> "to the West"
             NorthWest -> "to the NorthWest"
-            Up        -> "upward"
-            Down      -> "downward"
+            Up        -> "upstairs"
+            Down      -> "downstairs"
 
 showInventory :: State -> String
 showInventory state = ((++) "You are carrying:\n" $ showInventory' $ getInventory $ getPlayer state)

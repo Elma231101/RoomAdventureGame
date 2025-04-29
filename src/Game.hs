@@ -101,8 +101,8 @@ chainUse state =
         inventory' = [ i | i <- inventory, i /= chainName ]
         player' = MkPlayer { getInventory = inventory'
                            , getLocation = getLocation player
-                           , getHealth = (getHealth player) + 70
-                           , getScore = (getScore player) + 50
+                           , getHealth = (getHealth player) - 20
+                           , getScore = (getScore player) + 100
                            }
         state' = MkState { getPlayer = player'
                          , getItemLocations = getItemLocations state
@@ -173,6 +173,59 @@ pingPongUse state =
     in
         (state', mesg)
 
+weldingTorchName = "weldingtorch"
+weldingTorch = MkItem { getUse = Just weldingTorchUse
+               , getPut = True
+               , getTake = True
+               , getDisplay = "a welding torch"
+               }
+
+weldingTorchUse :: State -> (State, String)
+weldingTorchUse state =
+    let
+        score = getScore $ getPlayer state
+        player = getPlayer state
+        inventory = getInventory player
+        inventory' = [ i | i <- inventory, i /= weldingTorchName ]
+        player' = MkPlayer { getInventory = inventory'
+                           , getLocation = getLocation player
+                           , getHealth = (getHealth player) - 10
+                           , getScore = (getScore player) + 50
+                           }
+        state' = MkState { getPlayer = player'
+                         , getItemLocations = getItemLocations state
+                         }
+        mesg = "...I am done with the welding now...\n"
+            ++ "\n Happy with how that turned out!!"
+    in
+        (state', mesg)
+
+fastFoodName = "fastfood"
+fastFood = MkItem { getUse = Just fastFoodUse
+               , getPut = True
+               , getTake = True
+               , getDisplay = "some fastfood"
+               }
+
+fastFoodUse :: State -> (State, String)
+fastFoodUse state =
+    let
+        score = getScore $ getPlayer state
+        player = getPlayer state
+        inventory = getInventory player
+        inventory' = [ i | i <- inventory, i /= fastFoodName ]
+        player' = MkPlayer { getInventory = inventory'
+                           , getLocation = getLocation player
+                           , getHealth = (getHealth player) + 100
+                           , getScore = (getScore player) + 5
+                           }
+        state' = MkState { getPlayer = player'
+                         , getItemLocations = getItemLocations state
+                         }
+        mesg = "...That was delicious...\n"
+            ++ "\n Didn't know I was that hungry!"
+    in
+        (state', mesg)
 
 items = [ (bucketName, bucket)
         , (whiskeyName, whiskey)
@@ -181,6 +234,8 @@ items = [ (bucketName, bucket)
         , (emptyWhiskeyName, emptyWhiskey)
         , (demetrinName, demetrin)
         , (pingPongName, pingPong)
+        , (weldingTorchName, weldingTorch)
+        , (fastFoodName, fastFood)
         ]
 
 denName = RoomName "Living Room"
@@ -188,13 +243,15 @@ atticName = RoomName "Attic"
 gardenName = RoomName "Garden"
 bedRoomName = RoomName "Bed Room"
 basementName = RoomName "Basement"
+kitchenName = RoomName "Kitchen"
 
 livingRoom :: Room
 livingRoom = MkRoom { getDescription = (Description "You are in the living-room. A wizard is snoring loudly on the couch.")
                     , getRoomName = denName
                     , getExits = [ (Up, atticName)
                                  , (West, gardenName)
-                                 , (East, bedRoomName)]
+                                 , (East, bedRoomName)
+                                 , (South, kitchenName)]
                     }
 
 bedRoom :: Room
@@ -224,16 +281,24 @@ basement = MkRoom { getDescription = (Description "You are in the basement. Ther
                                  ]
                   }
 
+kitchen :: Room
+kitchen = MkRoom { getDescription = (Description "You are in the kitchen. There is some fastfood in the counter.")
+                    , getRoomName = kitchenName
+                    , getExits = [ (North, denName)
+                                 ]
+                  }
+
 rooms = [ (gardenName, gardenRoom)
         , (denName, livingRoom)
         , (atticName, atticRoom)
         , (bedRoomName, bedRoom)
         , (basementName, basement)
+        , (kitchenName, kitchen)
         ]
 
 player :: Player
 player = MkPlayer { getInventory = []
-                  , getLocation = bedRoomName
+                  , getLocation = denName
                   , getHealth = 100
                   , getScore = 0
                   }
@@ -241,9 +306,10 @@ player = MkPlayer { getInventory = []
 state :: State
 state = MkState { getItemLocations = [ (gardenName, [frogName, chainName])
                                      , (denName, [whiskeyName, bucketName])
-                                     , (atticName, [])
+                                     , (atticName, [weldingTorchName])
                                      , (bedRoomName, [demetrinName])
                                      , (basementName, [pingPongName, chainName])
+                                     , (kitchenName, [fastFoodName])
                                      ]
                 , getPlayer = player
                 }

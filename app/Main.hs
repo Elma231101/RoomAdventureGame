@@ -11,13 +11,18 @@ play state = do
     hFlush stdout
     input <- getLine
     let (state', mesg) = parseInput state input
-    if mesg == "Quit"
+    let player = getPlayer state'
+    if getHealth player < 1
+        then do
+            putStrLn "WASTED! Health dropped below zero. Restart the game."
+            return ()
+    else if mesg == "Quit"
         then do
             putStrLn "Exiting the program. Thank you for playing!"
             return ()
-        else do
-            putStrLn mesg
-            play state'
+    else do
+        putStrLn mesg
+        play state'
 
 main :: IO ()
 main = play state

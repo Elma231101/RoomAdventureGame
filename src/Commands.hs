@@ -222,20 +222,29 @@ parseDescription (Description desc, dirs) =
 
 parseDescription' :: [(Direction, RoomName)] -> String
 parseDescription' [] = ""
-parseDescription' ((dir, _) : dirs) =
-  "There is an exit " ++ dirString ++ ".\n" ++ parseDescription' dirs
+parseDescription' ((dir, roomName) : dirs) =
+  "There is an exit " ++ dirString ++ " leading to the " ++ roomString ++ ".\n" ++ parseDescription' dirs
   where dirString =
           case dir of
-            North     -> "to the North"
-            NorthEast -> "to the NorthEast"
-            East      -> "to the East"
-            SouthEast -> "to the SouthEast"
-            South     -> "to the South"
-            SouthWest -> "to the SouthWest"
-            West      -> "to the West"
-            NorthWest -> "to the NorthWest"
-            Up        -> "upstairs"
-            Down      -> "downstairs"
+            North     -> "North"
+            NorthEast -> "NorthEast"
+            East      -> "East"
+            SouthEast -> "SouthEast"
+            South     -> "South"
+            SouthWest -> "SouthWest"
+            West      -> "West"
+            NorthWest -> "NorthWest"
+            Up        -> "Upstairs"
+            Down      -> "Downstairs"
+       
+        roomString =
+          case roomName of
+            RoomName "Living Room" -> "Living Room"
+            RoomName "Attic"       -> "Attic"
+            RoomName "Garden"      -> "Garden"
+            RoomName "Bed Room"    -> "Bed Room"
+            RoomName "Basement"    -> "Basement"
+            RoomName "Kitchen"     -> "Kitchen"
 
 showInventory :: State -> String
 showInventory state = ((++) "You are carrying:\n" $ showInventory' $ getInventory $ getPlayer state)

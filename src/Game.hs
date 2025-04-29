@@ -2,8 +2,29 @@ module Game where
 
 import Rooms
 
+bucketUse :: State -> (State, String)
+bucketUse state =
+    let
+        score = getScore $ getPlayer state
+        player = getPlayer state
+        inventory = getInventory player
+        inventory' = [ i | i <- inventory, i /= bucketName ]
+        player' = MkPlayer { getInventory = inventory'
+                           , getLocation = getLocation player
+                           , getHealth = (getHealth player) - 15
+                           , getScore = (getScore player) + 50
+                           }
+        state' = MkState { getPlayer = player'
+                         , getItemLocations = getItemLocations state
+                         }
+        mesg = "...I filled 10 buckets with water....\n"
+            ++ "\n This is difficult but also interesting..."
+    in
+        (state', mesg)
+
+
 bucketName = "bucket"
-bucket = MkItem { getUse = Nothing
+bucket = MkItem { getUse = Just bucketUse
                 , getPut = True
                 , getTake = True
                 , getDisplay = "a bucket"
@@ -44,15 +65,55 @@ emptyWhiskey = MkItem { getUse = Nothing
                       , getDisplay = "an empty bottle with a label reading 'WHISKEY'"
                       }
 
+frogUse :: State -> (State, String)
+frogUse state =
+    let
+        score = getScore $ getPlayer state
+        player = getPlayer state
+        inventory = getInventory player
+        inventory' = [ i | i <- inventory, i /= frogName ]
+        player' = MkPlayer { getInventory = inventory'
+                           , getLocation = getLocation player
+                           , getHealth = (getHealth player) + 60
+                           , getScore = (getScore player) + 5
+                           }
+        state' = MkState { getPlayer = player'
+                         , getItemLocations = getItemLocations state
+                         }
+        mesg = "...The frog won the race...\n"
+            ++ "\n Yeahh, Applauded... "
+    in
+        (state', mesg)
+
 frogName = "frog"
-frog = MkItem { getUse = Nothing
+frog = MkItem { getUse = Just frogUse
               , getPut = True
               , getTake = True
               , getDisplay = "a frog"
               }
 
+chainUse :: State -> (State, String)
+chainUse state =
+    let
+        score = getScore $ getPlayer state
+        player = getPlayer state
+        inventory = getInventory player
+        inventory' = [ i | i <- inventory, i /= chainName ]
+        player' = MkPlayer { getInventory = inventory'
+                           , getLocation = getLocation player
+                           , getHealth = (getHealth player) + 70
+                           , getScore = (getScore player) + 50
+                           }
+        state' = MkState { getPlayer = player'
+                         , getItemLocations = getItemLocations state
+                         }
+        mesg = "...I won the chain game in a fight...\n"
+            ++ "\n It was a difficult game, but I won.... "
+    in
+        (state', mesg)
+
 chainName = "chain"
-chain = MkItem { getUse = Nothing
+chain = MkItem { getUse = Just chainUse
                , getPut = True
                , getTake = True
                , getDisplay = "a chain"

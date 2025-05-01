@@ -3,7 +3,7 @@ module Commands where
 
 import Data.Char
 import Data.Maybe
-import Rooms
+import World
 import Game
 
 data Action =
@@ -29,25 +29,29 @@ parseAction actionString =
     case ( map toUpper actionString ) of
         "MOVE"      -> Just Move
         "LOOK"      -> Just Look
+        "L"         -> Just Look
         "PUT"       -> Just Put
         "TAKE"      -> Just Take
         "USE"       -> Just Use
         "INVENTORY" -> Just Inventory
+        "I"         -> Just Inventory
         "QUIT"      -> Just Quit
+        "Q"         -> Just Quit
         "HELP"      -> Just Help
+        "H"         -> Just Help
         _           -> Nothing
 
 helpMesg :: String
 helpMesg = "COMMAND          | EFFECT\n" ++
            "-----------------------------------------------------\n" ++
            "MOVE <DIRECTION> | Move in a given direction.\n" ++
-           "LOOK             | Look at your surroundings.\n" ++
+           "L or LOOK        | Look at your surroundings.\n" ++
            "PUT <ITEM>       | Drop an item in your inventory.\n" ++
            "TAKE <ITEM>      | Take an item into your inventory.\n" ++
            "USE <ITEM>       | Use an item.\n" ++
-           "INVENTORY        | Show your inventory.\n" ++
-           "QUIT             | Quit the game.\n" ++
-           "HELP             | Show this help menu.\n"
+           "I or INVENTORY   | Show your inventory.\n" ++
+           "Q or QUIT        | Quit the game.\n" ++
+           "H or HELP        | Show this help menu.\n"
 
 parseLine :: String -> Command
 parseLine raw =
@@ -234,8 +238,8 @@ parseDescription' ((dir, roomName) : dirs) =
             SouthWest -> "SouthWest"
             West      -> "West"
             NorthWest -> "NorthWest"
-            Up        -> "Upstairs"
-            Down      -> "Downstairs"
+            Up        -> "Up"
+            Down      -> "Down"
        
         roomString =
           case roomName of
@@ -245,6 +249,7 @@ parseDescription' ((dir, roomName) : dirs) =
             RoomName "Bed Room"    -> "Bed Room"
             RoomName "Basement"    -> "Basement"
             RoomName "Kitchen"     -> "Kitchen"
+            RoomName "Hallway"     -> "Hallway"
 
 showInventory :: State -> String
 showInventory state = ((++) "You are carrying:\n" $ showInventory' $ getInventory $ getPlayer state)

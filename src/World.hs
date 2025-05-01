@@ -1,4 +1,4 @@
-module Rooms where
+module World where
 
 import Data.Char
 

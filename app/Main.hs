@@ -1,6 +1,6 @@
 module Main where
 
-import Rooms
+import World
 import Game
 import Commands
 import System.IO
@@ -16,6 +16,11 @@ play state = do
         then do
             putStrLn "WASTED! Health dropped below zero. Restart the game."
             return ()
+    else if getHealth player < 11
+        then do
+            putStrLn mesg
+            putStrLn "Critical Health level! Go eat something to get healthy again."
+            play state'
     else if mesg == "Quit"
         then do
             putStrLn "Exiting the program. Thank you for playing!"

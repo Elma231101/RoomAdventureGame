@@ -14,6 +14,8 @@ items = [ (bucketName, bucket)
         , (pingPongName, pingPong)
         , (weldingTorchName, weldingTorch)
         , (fastFoodName, fastFood)
+        , (keyName, key)
+        , (safeName, safe)
         ]
 
 rooms = [ (gardenName, gardenRoom)
@@ -35,11 +37,13 @@ player = MkPlayer { getInventory = []
 state :: State
 state = MkState { getItemLocations = [ (gardenName, [frogName, chainName, bucketName])
                                      , (livingRoomName, [whiskeyName])
-                                     , (atticName, [weldingTorchName])
-                                     , (bedRoomName, [demetrinName])
+                                     , (atticName, [weldingTorchName, safeName])
+                                     , (bedRoomName, [demetrinName, keyName])
                                      , (basementName, [pingPongName, chainName])
                                      , (kitchenName, [fastFoodName])
                                      , (hallwayName, [])
                                      ]
                 , getPlayer = player
                 }
+
+

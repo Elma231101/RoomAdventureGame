@@ -202,12 +202,26 @@ move' player direction =
     currentRoom <- lookup (getLocation player) rooms
     -- Look up the next location based on the direction provided
     nextLocation <- lookup direction $ getExits currentRoom
-    -- If both lookups are successful, return a new Player with the updated location
-    return MkPlayer { getInventory = getInventory player
-                  , getLocation = nextLocation
-                  , getHealth = getHealth player
-                  , getScore = getScore player
-                  }
+    -- Check if the next location is the attic
+    if nextLocation == RoomName "Attic" then
+      -- Check if the player has a chain in their inventory
+      if "chain" `elem` getInventory player then
+        -- If the player has a chain, return a new Player with the updated location
+        return MkPlayer { getInventory = getInventory player
+                         , getLocation = nextLocation
+                         , getHealth = getHealth player
+                         , getScore = getScore player
+                         }
+      else
+        -- If the player does not have a chain, return Nothing
+        Nothing
+    else
+      -- If the next location is not the attic, return a new Player with the updated location
+      return MkPlayer { getInventory = getInventory player
+                    , getLocation = nextLocation
+                    , getHealth = getHealth player
+                    , getScore = getScore player
+                    }
 
 -- Function to move the player within the game state
 move :: State -> Direction -> State
@@ -230,9 +244,15 @@ look state =
     desc = fromJust $ getDescription <$> room -- Get the room description (assuming it exists)
     exits = fromJust $ getExits <$> room -- Get the available exits from the room (assuming they exist)
     itemString = getItemDescriptions state -- Get a string describing items in the current location
+    -- Check if the player's inventory contains a "chain"
+    hasChain = "chain" `elem` getInventory player
+    -- Remove "attic" from exits if the player does not have a chain
+    updatedExits = if hasChain
+                   then exits
+                   else [ i | i <- exits, i /= (Up, RoomName "Attic") ]
   in
     -- Combine the room description, exits, and item descriptions into a single string
-    parseDescription (desc, exits) ++ itemString
+    parseDescription (desc, updatedExits) ++ itemString
 
 -- Function to get a description of items in the current room
 getItemDescriptions :: State -> String
